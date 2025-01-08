@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  */
 
-package com.mycompany.kelompok4_dailyplanner;
+package org.itenas.is.oop.projek.model;
 
 /**
  *
