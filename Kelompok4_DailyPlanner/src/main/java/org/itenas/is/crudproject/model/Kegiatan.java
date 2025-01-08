@@ -4,13 +4,17 @@
  */
 package org.itenas.is.crudproject.model;
 
+<<<<<<< HEAD
 import javax.swing.JComboBox;
 
+=======
+>>>>>>> 49ff8745e1a1b56ff266023132e96208b2d736db
 /**
  *
  * @author user
  */
 public class Kegiatan {
+<<<<<<< HEAD
 
     private String jam;
     private String aktivitas;
@@ -60,4 +64,7 @@ public class Kegiatan {
         this.status = status;
     }
 
+=======
+    
+>>>>>>> 49ff8745e1a1b56ff266023132e96208b2d736db
 }
