@@ -4,13 +4,25 @@
  */
 package org.itenas.is.crudproject.model;
 
+<<<<<<< HEAD
 import javax.swing.JComboBox;
 
+=======
+<<<<<<< HEAD
+import javax.swing.JComboBox;
+
+=======
+>>>>>>> 49ff8745e1a1b56ff266023132e96208b2d736db
+>>>>>>> 0eca72438f7c9e3373f2c70514e883ec24f19356
 /**
  *
  * @author user
  */
 public class Kegiatan {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> 0eca72438f7c9e3373f2c70514e883ec24f19356
 
     private String jam;
     private String aktivitas;
@@ -60,8 +72,12 @@ public class Kegiatan {
         this.status = status;
     }
 
-    public Object getNamaKegiatan() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+<<<<<<< HEAD
+    
 
+=======
+=======
+    
+>>>>>>> 49ff8745e1a1b56ff266023132e96208b2d736db
+>>>>>>> 0eca72438f7c9e3373f2c70514e883ec24f19356
 }
