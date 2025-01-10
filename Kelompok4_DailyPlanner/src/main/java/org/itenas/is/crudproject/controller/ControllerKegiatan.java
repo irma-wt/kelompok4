@@ -16,7 +16,11 @@ import org.itenas.is.crudproject.services.CrudService;
 public class ControllerKegiatan implements CrudService<Kegiatan> {
 
     ConnectionManager conMan = new ConnectionManager();
+<<<<<<< HEAD
     Connection con = conMan.logOn(); // Pastikan koneksi ke database 'kegiatan' berhasil
+=======
+    Connection con = conMan.logOn(); 
+>>>>>>> e857d41ad126add783c085edb369a2df7a8359f6
 
     @Override
     public boolean create(Kegiatan object) {
@@ -185,7 +189,16 @@ public List<Kegiatan> getAllTasks() {
 public List<Kegiatan> getCompletedTasks() {
     List<Kegiatan> completedTasks = new ArrayList<>();
     String query = "SELECT * FROM kegiatan WHERE Status = 'Selesai'";
+<<<<<<< HEAD
     try (PreparedStatement pstmt = con.prepareStatement(query); ResultSet rs = pstmt.executeQuery()) {
+=======
+
+    // Menggunakan try-with-resources untuk otomatis menutup PreparedStatement dan ResultSet
+    try (PreparedStatement pstmt = con.prepareStatement(query); 
+         ResultSet rs = pstmt.executeQuery()) {
+
+        // Memproses hasil query dan memasukkannya ke dalam list
+>>>>>>> e857d41ad126add783c085edb369a2df7a8359f6
         while (rs.next()) {
             completedTasks.add(new Kegiatan(
                     rs.getString("Jam"),
@@ -195,11 +208,24 @@ public List<Kegiatan> getCompletedTasks() {
             ));
         }
     } catch (SQLException e) {
+<<<<<<< HEAD
         System.err.println("Error saat mengambil data tugas selesai: " + e.getMessage());
     }
     return completedTasks;
 }
 
+=======
+        // Menangani error dengan mencetak ke log dan menampilkan dialog
+        System.err.println("Error saat mengambil data tugas selesai: " + e.getMessage());
+        JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat mengambil data tugas selesai: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    // Mengembalikan daftar kegiatan yang sudah selesai
+    return completedTasks;
+}
+
+
+>>>>>>> e857d41ad126add783c085edb369a2df7a8359f6
 // Mendapatkan tugas dengan prioritas 'Tinggi'
 public List<Kegiatan> getHighPriorityTasks() {
     List<Kegiatan> highPriorityTasks = new ArrayList<>();
@@ -218,9 +244,15 @@ public List<Kegiatan> getHighPriorityTasks() {
     }
     return highPriorityTasks;
 }
+<<<<<<< HEAD
 public void updateTable(javax.swing.JTable tabelKegiatan, String filterStatus) {
     // Validasi jika tabel tidak valid
     if (tabelKegiatan == null || tabelKegiatan.getModel() == null) {
+=======
+public void updateTable(javax.swing.JTable tabelPilihan, String filterStatus) {
+    // Validasi jika tabel tidak valid
+    if (tabelPilihan == null || tabelPilihan.getModel() == null) {
+>>>>>>> e857d41ad126add783c085edb369a2df7a8359f6
         System.out.println("Tabel atau model tabel tidak valid.");
         return;
     }
@@ -228,7 +260,11 @@ public void updateTable(javax.swing.JTable tabelKegiatan, String filterStatus) {
     // Inisialisasi koneksi
     ConnectionManager conMan = new ConnectionManager();
     Connection con = conMan.logOn();
+<<<<<<< HEAD
     DefaultTableModel model = (DefaultTableModel) tabelKegiatan.getModel();
+=======
+    DefaultTableModel model = (DefaultTableModel) tabelPilihan.getModel();
+>>>>>>> e857d41ad126add783c085edb369a2df7a8359f6
     model.setRowCount(0); // Hapus data lama dari tabel
 
     // Buat query berdasarkan filter
