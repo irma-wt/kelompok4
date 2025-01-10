@@ -2,24 +2,146 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package org.itenas.crudproject.viewdbswing;
+package org.itenas.is.crudproject.viewdbswing;
 
-import javax.swing.JOptionPane;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
 import org.itenas.is.crudproject.controller.ControllerKegiatan;
+import org.itenas.is.crudproject.dbconfig.ConnectionManager;
+import org.itenas.is.crudproject.model.Kegiatan;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.JOptionPane;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.io.FileOutputStream;
 
 /**
  *
- * @author HAFIZHAH
+ * @author user
  */
 public class FormKegiatan extends javax.swing.JFrame {
+
+    private Connection con;
+    private Boolean hasil;
+    private ControllerKegiatan conKegiatan;
+    private DefaultTableModel model;
+    private final FormAfterLogin formAfterLogin;
 
     /**
      * Creates new form FormKegiatan
      */
-    public FormKegiatan() {
-        initComponents();
+    public FormKegiatan(FormAfterLogin formAfterLogin) throws SQLException {
+    conKegiatan = new ControllerKegiatan();
+    ConnectionManager conMan = new ConnectionManager();
+    con = conMan.logOn();
+
+    this.formAfterLogin = formAfterLogin;
+    initComponents();
+    setLocationRelativeTo(null);
+    
+    
+    model = new DefaultTableModel();
+    tabelKegiatan.setModel(model);
+    model.addColumn("Jam");
+    model.addColumn("Kegiatan");
+    model.addColumn("Prioritas");
+    model.addColumn("Status");
+    
+    loadTableData();
+}
+
+    private void loadTableData() {
+    ConnectionManager conMan = new ConnectionManager();
+    Connection con = conMan.logOn();
+
+    String query = "SELECT * FROM kegiatan";
+    
+    try (PreparedStatement pstmt = con.prepareStatement(query);
+         ResultSet rs = pstmt.executeQuery()) {
+
+        DefaultTableModel model = (DefaultTableModel) tabelKegiatan.getModel();
+        model.setRowCount(0);
+        
+        if (model.getColumnCount() != 4) {
+            model.setColumnIdentifiers(new String[]{"Jam", "Kegiatan", "Prioritas", "Status"});
+        }
+
+        while (rs.next()) {
+            String jam = rs.getString("Jam");
+            String aktivitas = rs.getString("Aktivitas");
+            String prioritas = rs.getString("Prioritas");
+            String status = rs.getString("Status");
+            if (status == null || status.isEmpty()) {
+                status = "Belum selesai";
+            }
+
+            model.addRow(new Object[]{jam, aktivitas, prioritas, status});
+        }
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this,
+                "Gagal memuat data tabel: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+    } finally {
+        conMan.logOff(con);
+    }
+}
+
+    public final void getData() throws SQLException {
+    DefaultTableModel dtm = (DefaultTableModel) tabelKegiatan.getModel();
+    dtm.setRowCount(0);
+    
+    String[] columnNames = {"Jam", "Kegiatan", "Prioritas", "Status"};
+    dtm.setColumnIdentifiers(columnNames);
+    
+    List<Kegiatan> listKegiatan = conKegiatan.showKegiatan();
+    String[] data = new String[4]; 
+    for (Kegiatan newKegiatan : listKegiatan) {
+        data[0] = newKegiatan.getJam();
+        data[1] = newKegiatan.getAktivitas();
+        data[2] = newKegiatan.getPrioritas();
+        data[3] = newKegiatan.getStatus() != null ? newKegiatan.getStatus() : "Belum selesai"; 
+        
+        dtm.addRow(data);
+    }
+}
+
+    private void clearData() {
+        txtJam.setText("");
+        txtKegiatan.setText("");
+        comboPrioritas.setToolTipText("");
+        txtJam.setEditable(true);
+        txtKegiatan.setEditable(true);
+        comboPrioritas.setEditable(true);
     }
 
+    private void reloadTabel() {
+        ControllerKegiatan controller = new ControllerKegiatan();
+        List<Kegiatan> kegiatanList = controller.findAll(); 
+        DefaultTableModel model = (DefaultTableModel) tabelKegiatan.getModel();
+
+        model.setRowCount(0);
+
+    }
+    
+    public void refreshTable() {
+    ControllerKegiatan controller = new ControllerKegiatan();
+    controller.updateTable(tabelKegiatan, null); // Tidak ada filter, tampilkan semua data
+}
+    
+    
+
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -29,6 +151,9 @@ public class FormKegiatan extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -55,7 +180,22 @@ public class FormKegiatan extends javax.swing.JFrame {
         btnSearch = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
 
+        jLabel1.setText("jLabel1");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel2.setText("jLabel2");
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -101,6 +241,7 @@ public class FormKegiatan extends javax.swing.JFrame {
         btnPrint.setBackground(new java.awt.Color(204, 0, 204));
         btnPrint.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         btnPrint.setForeground(new java.awt.Color(255, 255, 255));
+        btnPrint.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\icons8-print-24.png")); // NOI18N
         btnPrint.setText("Print");
         btnPrint.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -111,6 +252,7 @@ public class FormKegiatan extends javax.swing.JFrame {
         btnUpdate1.setBackground(new java.awt.Color(51, 153, 255));
         btnUpdate1.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         btnUpdate1.setForeground(new java.awt.Color(255, 255, 255));
+        btnUpdate1.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\icons8-pencil-16.png")); // NOI18N
         btnUpdate1.setText("Update");
         btnUpdate1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -121,6 +263,7 @@ public class FormKegiatan extends javax.swing.JFrame {
         btnDelete1.setBackground(new java.awt.Color(255, 51, 51));
         btnDelete1.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         btnDelete1.setForeground(new java.awt.Color(255, 255, 255));
+        btnDelete1.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\icons8-delete-24.png")); // NOI18N
         btnDelete1.setText("Delete");
         btnDelete1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -131,6 +274,7 @@ public class FormKegiatan extends javax.swing.JFrame {
         btnSelesaikanTugas.setBackground(new java.awt.Color(0, 204, 0));
         btnSelesaikanTugas.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         btnSelesaikanTugas.setForeground(new java.awt.Color(255, 255, 255));
+        btnSelesaikanTugas.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\icons8-done-24 (1).png")); // NOI18N
         btnSelesaikanTugas.setText("Selesaikan Tugas");
         btnSelesaikanTugas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -141,6 +285,7 @@ public class FormKegiatan extends javax.swing.JFrame {
         btnBack.setBackground(new java.awt.Color(153, 153, 153));
         btnBack.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         btnBack.setForeground(new java.awt.Color(255, 255, 255));
+        btnBack.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\icons8-back-24.png")); // NOI18N
         btnBack.setText("Back");
         btnBack.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -151,6 +296,7 @@ public class FormKegiatan extends javax.swing.JFrame {
         btnLogout.setBackground(new java.awt.Color(102, 102, 255));
         btnLogout.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         btnLogout.setForeground(new java.awt.Color(255, 255, 255));
+        btnLogout.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\icons8-logout-24.png")); // NOI18N
         btnLogout.setText("LOGOUT");
         btnLogout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -198,6 +344,7 @@ public class FormKegiatan extends javax.swing.JFrame {
         btnSubmit1.setBackground(new java.awt.Color(41, 95, 152));
         btnSubmit1.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         btnSubmit1.setForeground(new java.awt.Color(255, 255, 255));
+        btnSubmit1.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\icons8-submit-progress-24 (1).png")); // NOI18N
         btnSubmit1.setText("Submit");
         btnSubmit1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -208,6 +355,7 @@ public class FormKegiatan extends javax.swing.JFrame {
         btnClear1.setBackground(new java.awt.Color(255, 153, 51));
         btnClear1.setFont(new java.awt.Font("SansSerif", 1, 12)); // NOI18N
         btnClear1.setForeground(new java.awt.Color(255, 255, 255));
+        btnClear1.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\icons8-erase-24.png")); // NOI18N
         btnClear1.setText("Clear");
         btnClear1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -217,6 +365,7 @@ public class FormKegiatan extends javax.swing.JFrame {
 
         btnSearch.setBackground(new java.awt.Color(204, 204, 204));
         btnSearch.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
+        btnSearch.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\icons8-search-16 (1).png")); // NOI18N
         btnSearch.setText("Search");
         btnSearch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -319,6 +468,8 @@ public class FormKegiatan extends javax.swing.JFrame {
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
+        jLabel9.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\icons8-to-do-list-100.png")); // NOI18N
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -369,72 +520,65 @@ public class FormKegiatan extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void tabelKegiatanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelKegiatanMouseClicked
-     
-    }//GEN-LAST:event_tabelKegiatanMouseClicked
-
     private void btnPrintActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrintActionPerformed
-
-    }//GEN-LAST:event_btnPrintActionPerformed
-
-    private void btnUpdate1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdate1ActionPerformed
-        
-    }//GEN-LAST:event_btnUpdate1ActionPerformed
-
-    private void btnDelete1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDelete1ActionPerformed
-     
-    }//GEN-LAST:event_btnDelete1ActionPerformed
-
-    private void btnSelesaikanTugasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelesaikanTugasActionPerformed
-        int selectedRow = tabelKegiatan.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Pilih aktivitas yang ingin diselesaikan!", "Peringatan", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        String aktivitas = tabelKegiatan.getValueAt(selectedRow, 1).toString();
-        ControllerKegiatan controller = new ControllerKegiatan();
-        Kegiatan kegiatan = controller.findByAktivitas(aktivitas);
-
-        if (kegiatan != null) {
-            kegiatan.setStatus("Selesai");
-            try {
-                controller.update(aktivitas, kegiatan);
-                JOptionPane.showMessageDialog(this, "Aktivitas telah diselesaikan!", "Informasi", JOptionPane.INFORMATION_MESSAGE);
-
-                tabelKegiatan.setValueAt("Selesai", selectedRow, 3); // Kolom ke-3 adalah kolom Status
-
-                if (formAfterLogin != null) {
-                    formAfterLogin.loadStats();
-                }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Gagal memperbarui status: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Gagal memperbarui status! Aktivitas tidak ditemukan.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_btnSelesaikanTugasActionPerformed
-
-    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
-      
-    }//GEN-LAST:event_btnBackActionPerformed
-
-    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
         // TODO add your handling code here:
-        int confirm = JOptionPane.showConfirmDialog(this,
-            "Apakah Anda yakin ingin keluar dan kembali ke halaman awal?",
-            "Konfirmasi Logout",
-            JOptionPane.YES_NO_OPTION);
+        try {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        String timestamp = sdf.format(new Date());
+        String fileName = System.getProperty("user.home") + "/Downloads/DailyPlanner_" + timestamp + ".pdf";
 
-        if (confirm == JOptionPane.YES_OPTION) {
-            // Membuka form awal
-            FormAwal formAwal = new FormAwal(); // Pastikan FormAwal adalah nama kelas form awal Anda
-            formAwal.setVisible(true);
+        Document document = new Document();
+        PdfWriter.getInstance(document, new FileOutputStream(fileName));
+        document.open();
 
-            // Menutup form saat ini
-            this.dispose(); // Menutup form yang sedang aktif
+        document.add(new Paragraph("============================================================="));
+        document.add(new Paragraph("                                        DAILY PLANNER           ", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 14)));
+        document.add(new Paragraph("============================================================="));
+        document.add(new Paragraph("Dibuat pada: " + new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date())));
+        document.add(new Paragraph("\n"));
+
+        PdfPTable table = new PdfPTable(4); 
+        table.setWidthPercentage(100);
+        table.setWidths(new int[]{2, 6, 3, 3}); 
+
+        table.addCell(new PdfPCell(new Paragraph("Jam", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
+        table.addCell(new PdfPCell(new Paragraph("Kegiatan", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
+        table.addCell(new PdfPCell(new Paragraph("Prioritas", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
+        table.addCell(new PdfPCell(new Paragraph("Status", FontFactory.getFont(FontFactory.HELVETICA_BOLD))));
+
+        DefaultTableModel model = (DefaultTableModel) tabelKegiatan.getModel();
+        for (int row = 0; row < model.getRowCount(); row++) {
+            String jam = model.getValueAt(row, 0) != null ? model.getValueAt(row, 0).toString() : "";
+            String kegiatan = model.getValueAt(row, 1) != null ? model.getValueAt(row, 1).toString() : "";
+            String prioritas = model.getValueAt(row, 2) != null ? model.getValueAt(row, 2).toString() : "";
+            String status = model.getValueAt(row, 3) != null ? model.getValueAt(row, 3).toString() : "";
+
+            table.addCell(jam);
+            table.addCell(kegiatan);
+            table.addCell(prioritas);
+            table.addCell(status);
         }
-    }//GEN-LAST:event_btnLogoutActionPerformed
+
+        document.add(table);
+        document.add(new Paragraph("\n"));
+        document.add(new Paragraph("----------------------------------------------------------------------------------------------------"));
+        document.add(new Paragraph("*** Terimakasih Telah Menggunakan Daily Planner ***"));
+
+        document.close();
+
+        JOptionPane.showMessageDialog(this,
+                "File PDF berhasil dibuat di: " + fileName,
+                "Sukses",
+                JOptionPane.INFORMATION_MESSAGE);
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+                "Gagal membuat file PDF: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
+    }//GEN-LAST:event_btnPrintActionPerformed
 
     private void txtJamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtJamActionPerformed
         // TODO add your handling code here:
@@ -444,12 +588,8 @@ public class FormKegiatan extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtKegiatanActionPerformed
 
-    private void comboPrioritasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboPrioritasActionPerformed
-    
-    }//GEN-LAST:event_comboPrioritasActionPerformed
-
     private void btnSubmit1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmit1ActionPerformed
- ControllerKegiatan controller = new ControllerKegiatan();
+        ControllerKegiatan controller = new ControllerKegiatan();
 
         String jam = txtJam.getText();
         String aktivitas = txtKegiatan.getText();
@@ -482,8 +622,100 @@ public class FormKegiatan extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Gagal menyimpan data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
-        }      
+        }
     }//GEN-LAST:event_btnSubmit1ActionPerformed
+
+    private void btnUpdate1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdate1ActionPerformed
+                                   
+    ControllerKegiatan controller = new ControllerKegiatan();
+
+    String aktivitas = txtKegiatan.getText();
+    String jam = txtJam.getText();
+    String prioritas = (String) comboPrioritas.getSelectedItem();
+
+    if (aktivitas.isEmpty() || jam.isEmpty() || prioritas.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Semua kolom harus diisi!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int selectedRow = tabelKegiatan.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih baris yang akan diupdate terlebih dahulu!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Ambil data lama dari tabel
+    String aktivitasLama = (String) tabelKegiatan.getValueAt(selectedRow, 1);
+    String statusLama = (String) tabelKegiatan.getValueAt(selectedRow, 3); // Ambil status dari tabel
+
+    int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin memperbarui data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        // Pertahankan status lama
+        Kegiatan kegiatan = new Kegiatan(jam, aktivitas, prioritas, statusLama);
+
+        try {
+            controller.update(aktivitasLama, kegiatan);
+            JOptionPane.showMessageDialog(this, "Data berhasil diperbarui!", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+
+            // Reset input field
+            txtJam.setText("");
+            txtKegiatan.setText("");
+            comboPrioritas.setSelectedIndex(0);
+
+            // Reload data tabel
+            loadTableData();
+
+            // Tetapkan baris yang diupdate tetap terpilih
+            tabelKegiatan.setRowSelectionInterval(selectedRow, selectedRow);
+
+            if (formAfterLogin != null) {
+                formAfterLogin.loadStats();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Gagal memperbarui data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+    }//GEN-LAST:event_btnUpdate1ActionPerformed
+
+    private void btnDelete1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDelete1ActionPerformed
+        ControllerKegiatan controller = new ControllerKegiatan();
+
+        String aktivitas = txtKegiatan.getText().trim();
+
+        if (aktivitas.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Masukkan nama aktivitas yang ingin dihapus!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin menghapus aktivitas ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                Kegiatan kegiatan = controller.findByAktivitas(aktivitas);
+
+                if (kegiatan != null) {
+                    boolean isDeleted = controller.delete(aktivitas);
+                    if (isDeleted) {
+                        JOptionPane.showMessageDialog(this, "Data berhasil dihapus!", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+
+                        txtKegiatan.setText("");
+                        loadTableData();
+
+                        if (formAfterLogin != null) {
+                            formAfterLogin.loadStats();
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Gagal menghapus data.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Aktivitas tidak ditemukan di database.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menghapus data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_btnDelete1ActionPerformed
 
     private void btnClear1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClear1ActionPerformed
         txtJam.setText("");
@@ -495,44 +727,164 @@ public class FormKegiatan extends javax.swing.JFrame {
         loadTableData();
     }//GEN-LAST:event_btnClear1ActionPerformed
 
+    private void tabelKegiatanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelKegiatanMouseClicked
+        int selectedRow = tabelKegiatan.getSelectedRow();
+
+        if (selectedRow != -1) {
+            Object jam = tabelKegiatan.getValueAt(selectedRow, 0);        
+            Object aktivitas = tabelKegiatan.getValueAt(selectedRow, 1); 
+            Object prioritas = tabelKegiatan.getValueAt(selectedRow, 2); 
+
+            txtJam.setText(jam != null ? jam.toString() : "");
+            txtKegiatan.setText(aktivitas != null ? aktivitas.toString() : "");
+
+            if (prioritas != null) {
+                for (int i = 0; i < comboPrioritas.getItemCount(); i++) {
+                    if (comboPrioritas.getItemAt(i).equals(prioritas.toString())) {
+                        comboPrioritas.setSelectedIndex(i);
+                        break;
+                    }
+                }
+            }
+        }
+    }//GEN-LAST:event_tabelKegiatanMouseClicked
+
+    private void comboPrioritasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboPrioritasActionPerformed
+        // TODO add your handling code here:
+        String prioritasDipilih = comboPrioritas.getSelectedItem().toString();
+
+        System.out.println("Prioritas dipilih: " + prioritasDipilih);
+
+    }//GEN-LAST:event_comboPrioritasActionPerformed
+
+    private void btnSelesaikanTugasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelesaikanTugasActionPerformed
+        int selectedRow = tabelKegiatan.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih aktivitas yang ingin diselesaikan!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String aktivitas = tabelKegiatan.getValueAt(selectedRow, 1).toString();
+        ControllerKegiatan controller = new ControllerKegiatan();
+        Kegiatan kegiatan = controller.findByAktivitas(aktivitas);
+
+        if (kegiatan != null) {
+            kegiatan.setStatus("Selesai");
+            try {
+                controller.update(aktivitas, kegiatan);
+                JOptionPane.showMessageDialog(this, "Aktivitas telah diselesaikan!", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+
+                tabelKegiatan.setValueAt("Selesai", selectedRow, 3); // Kolom ke-3 adalah kolom Status
+
+                if (formAfterLogin != null) {
+                    formAfterLogin.loadStats();
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Gagal memperbarui status: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Gagal memperbarui status! Aktivitas tidak ditemukan.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+    }//GEN-LAST:event_btnSelesaikanTugasActionPerformed
+
+    private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
+        // TODO add your handling code here:
+        FormAfterLogin formAfterLogin = new FormAfterLogin();
+        formAfterLogin.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnBackActionPerformed
+
+    private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
+       int confirm = JOptionPane.showConfirmDialog(this,
+        "Apakah Anda yakin ingin keluar dan kembali ke halaman awal?",
+        "Konfirmasi Logout",
+        JOptionPane.YES_NO_OPTION);
+        
+    if (confirm == JOptionPane.YES_OPTION) {
+        // Membuka form awal
+        FormAwal formAwal = new FormAwal(); // Pastikan FormAwal adalah nama kelas form awal Anda
+        formAwal.setVisible(true);
+        
+        // Menutup form saat ini
+        this.dispose(); // Menutup form yang sedang aktif
+    }
+    }//GEN-LAST:event_btnLogoutActionPerformed
+
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-      
+        // TODO add your handling code here:
+        String searchTerm = txtSearch.getText().toLowerCase().trim();
+
+        // Jika input pencarian kosong, tampilkan semua data
+        if (searchTerm.isEmpty()) {
+            loadTableData(); // Pastikan metode ini memuat semua data tabel
+            return;
+        }
+
+        try {
+            // Ambil model tabel untuk memodifikasi data
+            DefaultTableModel model = (DefaultTableModel) tabelKegiatan.getModel();
+            model.setRowCount(0); // Hapus semua baris sebelumnya
+
+            // Query untuk mencari data berdasarkan kolom yang relevan
+            String query = "SELECT * FROM kegiatan WHERE " +
+            "(LOWER(COALESCE(status, 'belum selesai')) LIKE ? OR " +
+            "LOWER(prioritas) LIKE ? OR " +
+            "LOWER(aktivitas) LIKE ? OR " +
+            "LOWER(jam) LIKE ?)";
+
+            try (PreparedStatement pstmt = con.prepareStatement(query)) {
+                String searchPattern = "%" + searchTerm + "%";
+                pstmt.setString(1, searchPattern);
+                pstmt.setString(2, searchPattern);
+                pstmt.setString(3, searchPattern);
+                pstmt.setString(4, searchPattern);
+
+                try (ResultSet rs = pstmt.executeQuery()) {
+                    // Tambahkan data ke tabel
+                    while (rs.next()) {
+                        String jam = rs.getString("jam");
+                        String aktivitas = rs.getString("aktivitas");
+                        String prioritas = rs.getString("prioritas");
+                        String status = rs.getString("status");
+                        if (status == null || status.isEmpty()) {
+                            status = "Belum selesai";
+                        }
+
+                        // Filter status jika pencarian sesuai dengan 'Selesai' atau 'Belum selesai'
+                        if (searchTerm.equals("selesai") && !status.equalsIgnoreCase("selesai")) {
+                            continue;
+                        } else if (searchTerm.equals("belum selesai") && !status.equalsIgnoreCase("belum selesai")) {
+                            continue;
+                        }
+
+                        model.addRow(new Object[]{jam, aktivitas, prioritas, status});
+                    }
+                }
+            }
+
+            // Tampilkan pesan jika tidak ada hasil pencarian
+            if (model.getRowCount() == 0) {
+                JOptionPane.showMessageDialog(this,
+                    "Tidak ada kegiatan yang cocok dengan pencarian: '" + searchTerm + "'",
+                    "Hasil Pencarian",
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (SQLException e) {
+            // Tangani kesalahan database
+            JOptionPane.showMessageDialog(this,
+                "Error saat melakukan pencarian: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_btnSearchActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FormKegiatan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FormKegiatan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FormKegiatan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FormKegiatan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FormKegiatan().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBack;
@@ -545,6 +897,8 @@ public class FormKegiatan extends javax.swing.JFrame {
     private javax.swing.JButton btnSubmit1;
     private javax.swing.JButton btnUpdate1;
     private javax.swing.JComboBox<String> comboPrioritas;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -553,6 +907,7 @@ public class FormKegiatan extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
@@ -561,4 +916,5 @@ public class FormKegiatan extends javax.swing.JFrame {
     private javax.swing.JTextField txtKegiatan;
     private javax.swing.JTextField txtSearch;
     // End of variables declaration//GEN-END:variables
+
 }

@@ -2,24 +2,19 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package org.itenas.crudproject.viewdbswing;
+package org.itenas.is.crudproject.viewdbswing;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import org.itenas.is.crudproject.dbconfig.ConnectionManager;
-import javax.swing.table.DefaultTableModel;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
 import org.itenas.is.crudproject.controller.ControllerKegiatan;
 import org.itenas.is.crudproject.model.Kegiatan;
-import org.itenas.is.crudproject.viewdbswing.FormKegiatan;
 
 /**
  *
@@ -32,15 +27,46 @@ public class FormAfterLogin extends javax.swing.JFrame {
      */
     public FormAfterLogin() {
         initComponents();
-      
+        setLocationRelativeTo(null); 
+        loadStats();
 
         
     }
     
-    
-    
+    void loadStats() {
+    ConnectionManager conMan = new ConnectionManager(); 
+    Connection con = conMan.logOn();
 
+    String queryTotal = "SELECT COUNT(*) AS total FROM kegiatan";
+    String queryCompleted = "SELECT COUNT(*) AS completed FROM kegiatan WHERE Status = 'Selesai'";
+    String queryPriority = "SELECT COUNT(*) AS highPriority FROM kegiatan WHERE Prioritas = 'Tinggi'";
 
+    try (PreparedStatement pstmtTotal = con.prepareStatement(queryTotal);
+         PreparedStatement pstmtCompleted = con.prepareStatement(queryCompleted);
+         PreparedStatement pstmtPriority = con.prepareStatement(queryPriority)) {
+
+        ResultSet rsTotal = pstmtTotal.executeQuery();
+        if (rsTotal.next()) {
+            txt_Total.setText(rsTotal.getString("total")); // Isi field Total Task
+        }
+
+        ResultSet rsCompleted = pstmtCompleted.executeQuery();
+        if (rsCompleted.next()) {
+            txt_Completed.setText(rsCompleted.getString("completed")); // Isi field Completed
+        }
+
+        ResultSet rsPriority = pstmtPriority.executeQuery();
+        if (rsPriority.next()) {
+            txt_Priority.setText(rsPriority.getString("highPriority")); // Isi field Priority
+        }
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Gagal memuat statistik: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    } finally {
+        conMan.logOff(con); 
+    }    
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -57,6 +83,7 @@ public class FormAfterLogin extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -67,16 +94,19 @@ public class FormAfterLogin extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         txt_Priority = new javax.swing.JTextField();
         jLabel13 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
         completed = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         txt_Completed = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
         totalTask = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         txt_Total = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -99,34 +129,7 @@ public class FormAfterLogin extends javax.swing.JFrame {
         jLabel3.setForeground(new java.awt.Color(102, 123, 198));
         jLabel3.setText("DAILY PLANNER");
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap(12, Short.MAX_VALUE)
-                .addComponent(jLabel4)
-                .addGap(40, 40, 40)
-                .addComponent(jLabel14)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
-                .addGap(166, 166, 166))
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(jLabel3)))
-                .addContainerGap(16, Short.MAX_VALUE))
-        );
+        jLabel15.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\icons8-to-do-list-100.png")); // NOI18N
 
         jPanel3.setBackground(new java.awt.Color(219, 246, 233));
 
@@ -138,6 +141,7 @@ public class FormAfterLogin extends javax.swing.JFrame {
 
         btnTask.setBackground(new java.awt.Color(250, 243, 221));
         btnTask.setFont(new java.awt.Font("SansSerif", 1, 14)); // NOI18N
+        btnTask.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\icons8-add-24 (1).png")); // NOI18N
         btnTask.setText("New Task");
         btnTask.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -155,7 +159,7 @@ public class FormAfterLogin extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
                     .addComponent(btnTask))
-                .addContainerGap(191, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -196,6 +200,8 @@ public class FormAfterLogin extends javax.swing.JFrame {
             }
         });
 
+        jLabel18.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\icons8-star-24.png")); // NOI18N
+
         javax.swing.GroupLayout highPriorityLayout = new javax.swing.GroupLayout(highPriority);
         highPriority.setLayout(highPriorityLayout);
         highPriorityLayout.setHorizontalGroup(
@@ -204,9 +210,13 @@ public class FormAfterLogin extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(highPriorityLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
-                    .addComponent(jLabel6)
-                    .addComponent(txt_Priority, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel13))
+                    .addGroup(highPriorityLayout.createSequentialGroup()
+                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(highPriorityLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel18)
+                            .addComponent(jLabel6)
+                            .addComponent(txt_Priority, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(94, Short.MAX_VALUE))
         );
         highPriorityLayout.setVerticalGroup(
@@ -214,12 +224,14 @@ public class FormAfterLogin extends javax.swing.JFrame {
             .addGroup(highPriorityLayout.createSequentialGroup()
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel13)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                .addComponent(jLabel18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txt_Priority, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel13)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         completed.setBackground(new java.awt.Color(192, 235, 166));
@@ -228,6 +240,7 @@ public class FormAfterLogin extends javax.swing.JFrame {
         jLabel8.setForeground(new java.awt.Color(0, 153, 51));
         jLabel8.setText("Completed");
 
+        txt_Completed.setEditable(false);
         txt_Completed.setBackground(new java.awt.Color(192, 235, 166));
         txt_Completed.setForeground(new java.awt.Color(0, 153, 51));
         txt_Completed.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -235,6 +248,8 @@ public class FormAfterLogin extends javax.swing.JFrame {
                 txt_CompletedMouseClicked(evt);
             }
         });
+
+        jLabel17.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\Complete.png")); // NOI18N
 
         javax.swing.GroupLayout completedLayout = new javax.swing.GroupLayout(completed);
         completed.setLayout(completedLayout);
@@ -244,9 +259,13 @@ public class FormAfterLogin extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(completedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel7)
-                    .addComponent(jLabel8)
-                    .addComponent(txt_Completed, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12))
+                    .addGroup(completedLayout.createSequentialGroup()
+                        .addComponent(jLabel12)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(completedLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txt_Completed, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel17)
+                            .addComponent(jLabel8))))
                 .addContainerGap(90, Short.MAX_VALUE))
         );
         completedLayout.setVerticalGroup(
@@ -254,11 +273,13 @@ public class FormAfterLogin extends javax.swing.JFrame {
             .addGroup(completedLayout.createSequentialGroup()
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel12)
+                .addComponent(jLabel17)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txt_Completed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel12)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -274,6 +295,7 @@ public class FormAfterLogin extends javax.swing.JFrame {
         jLabel10.setForeground(new java.awt.Color(0, 51, 204));
         jLabel10.setText("Total Task");
 
+        txt_Total.setEditable(false);
         txt_Total.setBackground(new java.awt.Color(206, 230, 243));
         txt_Total.setForeground(new java.awt.Color(0, 51, 204));
         txt_Total.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -281,6 +303,8 @@ public class FormAfterLogin extends javax.swing.JFrame {
                 txt_TotalMouseClicked(evt);
             }
         });
+
+        jLabel16.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\icons8-bill-24.png")); // NOI18N
 
         javax.swing.GroupLayout totalTaskLayout = new javax.swing.GroupLayout(totalTask);
         totalTask.setLayout(totalTaskLayout);
@@ -290,9 +314,13 @@ public class FormAfterLogin extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(totalTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel9)
-                    .addComponent(jLabel10)
-                    .addComponent(txt_Total, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel11))
+                    .addGroup(totalTaskLayout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(totalTaskLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel16)
+                            .addComponent(jLabel10)
+                            .addComponent(txt_Total, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(91, Short.MAX_VALUE))
         );
         totalTaskLayout.setVerticalGroup(
@@ -300,12 +328,14 @@ public class FormAfterLogin extends javax.swing.JFrame {
             .addGroup(totalTaskLayout.createSequentialGroup()
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel11)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addComponent(jLabel16)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txt_Total, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel11)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
@@ -315,25 +345,69 @@ public class FormAfterLogin extends javax.swing.JFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addContainerGap()
+                        .addGap(12, 12, 12)
                         .addComponent(totalTask, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(completed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(77, 77, 77)
+                        .addGap(75, 75, 75)
                         .addComponent(highPriority, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap(14, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(totalTask, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(totalTask, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(completed, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(highPriority, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12))
+                .addGap(166, 166, 166))
+        );
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(jLabel15)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel14)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3))
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(182, 182, 182))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addGap(33, 33, 33))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                                .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))))
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -342,17 +416,9 @@ public class FormAfterLogin extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(59, 59, 59)
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(66, 66, 66)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -360,74 +426,110 @@ public class FormAfterLogin extends javax.swing.JFrame {
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 17, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 531, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaskActionPerformed
-          try {
-        new FormKegiatan(this).setVisible(true);
-    } catch (SQLException ex) {
-        Logger.getLogger(FormAfterLogin.class.getName()).log(Level.SEVERE, null, ex);
-        JOptionPane.showMessageDialog(this, "Gagal membuka FormKegiatan: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    }
-    dispose();
-    }//GEN-LAST:event_btnTaskActionPerformed
+    private void totalTaskMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_totalTaskMouseClicked
+
+    }//GEN-LAST:event_totalTaskMouseClicked
+
+    private void txt_TotalMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txt_TotalMouseClicked
+        try {
+            // Open FormHasil instead of FormKegiatan
+            FormHasil formHasil = new FormHasil();
+            formHasil.setVisible(true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat membuka FormHasil: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_txt_TotalMouseClicked
+
+    private void txt_CompletedMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txt_CompletedMouseClicked
+        try {
+            // Buat instance FormAfterLogin (atau gunakan instance yang sudah ada)
+            FormAfterLogin formAfterLogin = new FormAfterLogin(); // Pastikan ini valid
+
+            // Buat instance FormHasil dengan parameter formAfterLogin
+            FormHasil formHasil = new FormHasil(formAfterLogin);
+
+            // Ambil tabel dari FormHasil
+            javax.swing.JTable tabelPilihan = formHasil.getTabelPilihan();  // Gunakan metode yang benar untuk mendapatkan tabel
+
+            // Buat controller dan panggil updateTable dengan filter "Selesai"
+            ControllerKegiatan controller = new ControllerKegiatan();
+            controller.updateTable(tabelPilihan, "Selesai");
+
+            // Tampilkan FormKegiatan
+            formHasil.setVisible(true);
+        } catch (Exception ex) {
+            // Tangani semua jenis exception dalam satu blok
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                "Terjadi kesalahan: " + ex.getMessage(),
+                "Kesalahan",
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_txt_CompletedMouseClicked
+
+    private void highPriorityMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highPriorityMouseClicked
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_highPriorityMouseClicked
 
     private void txt_PriorityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_PriorityActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_PriorityActionPerformed
 
-    private void totalTaskMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_totalTaskMouseClicked
-      
-    }//GEN-LAST:event_totalTaskMouseClicked
-
-    private void txt_TotalMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txt_TotalMouseClicked
-  
-    }//GEN-LAST:event_txt_TotalMouseClicked
-
-    private void txt_CompletedMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txt_CompletedMouseClicked
-    
-    }//GEN-LAST:event_txt_CompletedMouseClicked
-
-    private void highPriorityMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_highPriorityMouseClicked
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_highPriorityMouseClicked
-
     private void txt_PriorityMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txt_PriorityMouseClicked
-
         try {
-        FormAfterLogin formAfterLogin = new FormAfterLogin();
-        FormKegiatan formKegiatan = new FormKegiatan(formAfterLogin);    
-        javax.swing.JTable tabelKegiatan = formKegiatan.getTabelKegiatan();   
-        ControllerKegiatan controller = new ControllerKegiatan();
-        controller.updateTable(tabelKegiatan, "Tinggi");  
-        formKegiatan.setVisible(true);
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat membuka FormKegiatan: " + ex.getMessage());
-    }
+            // Buat instance FormAfterLogin (atau gunakan instance yang sudah ada)
+            FormAfterLogin formAfterLogin = new FormAfterLogin(); // Pastikan ini valid
+
+            // Buat instance FormHasil dengan parameter formAfterLogin
+            FormHasil formHasil = new FormHasil(formAfterLogin);
+
+            // Ambil tabel dari FormHasil
+            javax.swing.JTable tabelHasil = formHasil.getTabelPilihan(); // Pastikan metode ini valid
+
+            // Buat controller dan panggil updateTable dengan filter "Tinggi"
+            ControllerKegiatan controller = new ControllerKegiatan();
+            controller.updateTable(tabelHasil, "Tinggi");
+
+            // Tampilkan FormHasil
+            formHasil.setVisible(true);
+        } catch (Exception ex) {
+            // Tangani semua jenis exception dalam satu blok
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this,
+                "Terjadi kesalahan: " + ex.getMessage(),
+                "Kesalahan",
+                JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_txt_PriorityMouseClicked
+
+    private void btnTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaskActionPerformed
+        try {
+            new FormKegiatan(this).setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(FormAfterLogin.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Gagal membuka FormKegiatan: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        dispose();
+    }//GEN-LAST:event_btnTaskActionPerformed
 
     /**
      * @param args the command line arguments
@@ -444,6 +546,10 @@ public class FormAfterLogin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
