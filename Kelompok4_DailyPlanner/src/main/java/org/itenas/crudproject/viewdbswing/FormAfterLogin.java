@@ -385,7 +385,6 @@ public class FormAfterLogin extends javax.swing.JFrame {
 
     private void btnTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaskActionPerformed
           try {
-        // Kirim referensi FormAfterLogin ke FormKegiatan
         new FormKegiatan(this).setVisible(true);
     } catch (SQLException ex) {
         Logger.getLogger(FormAfterLogin.class.getName()).log(Level.SEVERE, null, ex);
@@ -416,25 +415,15 @@ public class FormAfterLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_highPriorityMouseClicked
 
     private void txt_PriorityMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txt_PriorityMouseClicked
-       
+
         try {
-       
         FormAfterLogin formAfterLogin = new FormAfterLogin();
-        
-      
-        FormKegiatan formKegiatan = new FormKegiatan(formAfterLogin);
-
-      
-        javax.swing.JTable tabelKegiatan = formKegiatan.getTabelKegiatan();
-
-      
+        FormKegiatan formKegiatan = new FormKegiatan(formAfterLogin);    
+        javax.swing.JTable tabelKegiatan = formKegiatan.getTabelKegiatan();   
         ControllerKegiatan controller = new ControllerKegiatan();
-        controller.updateTable(tabelKegiatan, "Tinggi");
-
-      
+        controller.updateTable(tabelKegiatan, "Tinggi");  
         formKegiatan.setVisible(true);
     } catch (SQLException ex) {
-     
         ex.printStackTrace();
         JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat membuka FormKegiatan: " + ex.getMessage());
     }
