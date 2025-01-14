@@ -14,9 +14,7 @@ import org.itenas.is.crudproject.controller.ControllerLogin;
 public class FormRegister extends javax.swing.JFrame {
     Boolean hasil;
     ControllerLogin conLog = new ControllerLogin();
-    /**
-     * Creates new form register
-     */
+    
     public FormRegister() {
         initComponents();
         setLocationRelativeTo(null);
@@ -204,9 +202,6 @@ public class FormRegister extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtUsernameActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -26,7 +26,7 @@ public class ConnectionManager {
         return con;
     }
 
-    // Metode untuk menutup koneksi ke database
+    // Menutup koneksi ke database
     public void logOff(Connection con1) {
         try {
             if (con != null && !con.isClosed()) {
@@ -38,7 +38,7 @@ public class ConnectionManager {
         }
     }
 
-    // Metode alternatif untuk mendapatkan koneksi
+    // Mendapatkan koneksi
     public Connection getConnection() {
         if (con == null || !isConnected()) {
             logOn();
@@ -46,7 +46,7 @@ public class ConnectionManager {
         return con;
     }
 
-    // Metode untuk memeriksa apakah koneksi masih aktif
+    // mengecek koneksi apakah masih aktif
     private boolean isConnected() {
         try {
             return con != null && !con.isClosed();

@@ -27,15 +27,15 @@ public class ControllerKegiatan implements CrudService<Kegiatan> {
             pstmt.setString(3, object.getPrioritas());
             pstmt.setString(4, "Belum selesai"); // Status default
 
-            // Eksekusi query
+      
             int rowsAffected = pstmt.executeUpdate();
 
-            // Jika ada baris yang terpengaruh, data berhasil disimpan
+          
             return rowsAffected > 0;
         } catch (SQLException ex) {
             System.err.println("Error saat menyimpan data: " + ex.getMessage());
         }
-        // Jika terjadi error, kembalikan false
+        
         return false;
     }
 
@@ -105,7 +105,7 @@ public class ControllerKegiatan implements CrudService<Kegiatan> {
 
     try (PreparedStatement pstmt = con.prepareStatement(query)) {
 
-        // Cek apakah objek Kegiatan berisi nilai yang valid
+        
         if (object.getJam() == null || object.getJam().isEmpty() || 
             object.getAktivitas() == null || object.getAktivitas().isEmpty() || 
             object.getPrioritas() == null || object.getPrioritas().isEmpty() || 
@@ -113,14 +113,12 @@ public class ControllerKegiatan implements CrudService<Kegiatan> {
             throw new IllegalArgumentException("Semua field harus diisi.");
         }
 
-        // Set parameter untuk prepared statement
         pstmt.setString(1, object.getJam());          // Jam
         pstmt.setString(2, object.getAktivitas());    // Aktivitas
         pstmt.setString(3, object.getPrioritas());    // Prioritas
         pstmt.setString(4, object.getStatus());       // Status
         pstmt.setString(5, aktivitas);                // Aktivitas lama untuk WHERE clause
 
-        // Menjalankan query update
         int rowsUpdated = pstmt.executeUpdate();
         
         if (rowsUpdated > 0) {
@@ -176,12 +174,12 @@ public class ControllerKegiatan implements CrudService<Kegiatan> {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
-    // Mendapatkan semua tugas
+    // Mengambil semua tugas
 public List<Kegiatan> getAllTasks() {
     return findAll();
 }
 
-// Mendapatkan tugas dengan status 'Selesai'
+// Mengambil tugas dengan status 'Selesai'
 public List<Kegiatan> getCompletedTasks() {
     List<Kegiatan> completedTasks = new ArrayList<>();
     String query = "SELECT * FROM kegiatan WHERE Status = 'Selesai'";
@@ -210,7 +208,7 @@ public List<Kegiatan> getCompletedTasks() {
 }
 
 
-// Mendapatkan tugas dengan prioritas 'Tinggi'
+// Mengambil tugas dengan prioritas 'Tinggi'
 public List<Kegiatan> getHighPriorityTasks() {
     List<Kegiatan> highPriorityTasks = new ArrayList<>();
     String query = "SELECT * FROM kegiatan WHERE Prioritas = 'Tinggi'";
@@ -229,19 +227,18 @@ public List<Kegiatan> getHighPriorityTasks() {
     return highPriorityTasks;
 }
 public void updateTable(javax.swing.JTable tabelPilihan, String filterStatus) {
-    // Validasi jika tabel tidak valid
+    // Memvalidasi tabel
     if (tabelPilihan == null || tabelPilihan.getModel() == null) {
         System.out.println("Tabel atau model tabel tidak valid.");
         return;
     }
 
-    // Inisialisasi koneksi
     ConnectionManager conMan = new ConnectionManager();
     Connection con = conMan.logOn();
     DefaultTableModel model = (DefaultTableModel) tabelPilihan.getModel();
-    model.setRowCount(0); // Hapus data lama dari tabel
+    model.setRowCount(0); // Menghapus data lama dari tabel
 
-    // Buat query berdasarkan filter
+    // query berdasarkan filter
     String query;
     if (filterStatus == null) {
         query = "SELECT * FROM kegiatan"; // Semua data tanpa filter
@@ -250,7 +247,7 @@ public void updateTable(javax.swing.JTable tabelPilihan, String filterStatus) {
     }
 
     try (PreparedStatement stmt = con.prepareStatement(query)) {
-        // Set parameter filter jika ada
+
         if (filterStatus != null) {
             stmt.setString(1, filterStatus);
             stmt.setString(2, filterStatus);
@@ -260,19 +257,18 @@ public void updateTable(javax.swing.JTable tabelPilihan, String filterStatus) {
         while (rs.next()) {
             // Ambil data dari hasil query
             Object[] row = {
-                rs.getString("jam"),         // Kolom jam
-                rs.getString("aktivitas"),  // Kolom aktivitas
-                rs.getString("prioritas"),  // Kolom prioritas
-                rs.getString("status")      // Kolom status
+                rs.getString("jam"),       
+                rs.getString("aktivitas"),  
+                rs.getString("prioritas"),  
+                rs.getString("status")     
             };
-            model.addRow(row); // Tambahkan data ke model tabel
+            model.addRow(row); // Menambahkan data ke model tabel
         }
     } catch (SQLException e) {
-        // Tampilkan error jika terjadi
         e.printStackTrace();
         JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat memuat data: " + e.getMessage());
     } finally {
-        // Tutup koneksi untuk mencegah kebocoran
+
         conMan.logOff(con);
     }
 }

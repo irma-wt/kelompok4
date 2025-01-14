@@ -12,7 +12,7 @@ import java.sql.Statement;
 import org.itenas.is.crudproject.dbconfig.ConnectionManager;
 /**
  *
- * @author user
+ * @author Kelompok IV
  */
 public class ControllerLogin {
     private ConnectionManager conMan;

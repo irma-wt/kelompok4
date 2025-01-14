@@ -22,16 +22,14 @@ public class FormHasil extends javax.swing.JFrame {
     private Connection con;
     private DefaultTableModel model;
     private FormKegiatan formKegiatan;
-    /**
-     * Creates new form FormHasil
-     */
+    
     
     public FormHasil(FormAfterLogin formAfterLogin) throws SQLException {
         initComponents();
         this.formKegiatan = new FormKegiatan(formAfterLogin);
         setLocationRelativeTo(null);
         setupTable();
-        loadDataFromFormKegiatan(); // Memuat data dari database
+        loadDataFromFormKegiatan(); 
     }
 
     public FormHasil() throws SQLException {
@@ -83,7 +81,7 @@ public class FormHasil extends javax.swing.JFrame {
                         rs.getString("Prioritas"),
                         rs.getString("Status")
                     };
-                    model.addRow(row); // Add new row to the model
+                    model.addRow(row); 
                 }
 
                 tabelPilihan.revalidate();
@@ -114,7 +112,7 @@ public class FormHasil extends javax.swing.JFrame {
     }
     
     public javax.swing.JTable getTabelPilihan() {
-    return this.tabelPilihan; // Mengembalikan referensi ke tabel
+    return this.tabelPilihan; 
 }
     
 
@@ -262,16 +260,13 @@ public class FormHasil extends javax.swing.JFrame {
 
     private void btnKembaliActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKembaliActionPerformed
       try {
-        // Pastikan FormAfterLogin valid atau buat instance jika belum ada
-        FormAfterLogin formAfterLogin = new FormAfterLogin(); // Ganti sesuai konteks aplikasi Anda jika sudah ada instance sebelumnya
+        
+        FormAfterLogin formAfterLogin = new FormAfterLogin(); 
 
-        // Tampilkan FormAfterLogin
+        // Menampilkan FormAfterLogin
         formAfterLogin.setVisible(true);
-
-        // Tutup form saat ini
         this.dispose();
     } catch (Exception ex) {
-        // Tangani exception jika terjadi kesalahan
         ex.printStackTrace();
         JOptionPane.showMessageDialog(this, 
             "Terjadi kesalahan saat kembali ke FormAfterLogin: " + ex.getMessage(), 

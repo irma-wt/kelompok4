@@ -16,7 +16,6 @@ public class Kegiatan {
     private String aktivitas;
     private String prioritas;
     private String status;
-    // Deklaprasi JComboBox
 
     public Kegiatan() {
     }
